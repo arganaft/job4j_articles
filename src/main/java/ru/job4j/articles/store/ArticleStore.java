@@ -18,29 +18,14 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleStore.class.getSimpleName());
 
-    private final Properties properties;
 
     private Connection connection;
 
-    public ArticleStore(Properties properties) {
-        this.properties = properties;
-        initConnection();
+    public ArticleStore(Connection connection) {
+        this.connection = connection;
         initScheme();
     }
 
-    private void initConnection() {
-        LOGGER.info("Создание подключения к БД статей");
-        try {
-            connection = DriverManager.getConnection(
-                    properties.getProperty("url"),
-                    properties.getProperty("username"),
-                    properties.getProperty("password")
-            );
-        } catch (SQLException throwables) {
-            LOGGER.error("Не удалось выполнить операцию: { }", throwables.getCause());
-            throw new IllegalStateException();
-        }
-    }
 
     private void initScheme() {
         LOGGER.info("Инициализация таблицы статей");

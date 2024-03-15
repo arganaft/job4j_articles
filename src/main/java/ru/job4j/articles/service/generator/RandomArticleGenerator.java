@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RandomArticleGenerator implements ArticleGenerator {
+    private StringBuilder articleBuilder = new StringBuilder(6000);
+    private final String separator = " ";
     @Override
     public Article generate(List<Word> words) {
-        var wordsCopy = new ArrayList<>(words);
-        Collections.shuffle(wordsCopy);
-        var content = wordsCopy.stream()
-                .map(Word::getValue)
-                .collect(Collectors.joining(" "));
-        return new Article(content);
+        Collections.shuffle(words);
+        articleBuilder.setLength(0);
+        for (Word word : words) {
+            articleBuilder.append(word.getValue());
+            articleBuilder.append(separator);
+        }
+        return new Article(articleBuilder.toString());
     }
 }

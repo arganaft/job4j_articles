@@ -16,31 +16,14 @@ import java.util.Properties;
 
 public class WordStore implements Store<Word>, AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WordStore.class.getSimpleName());
-
-    private final Properties properties;
-
+    private final Logger LOGGER = LoggerFactory.getLogger(WordStore.class.getSimpleName());
     private Connection connection;
+    String findAllsql = "select * from dictionary";
 
-    public WordStore(Properties properties) {
-        this.properties = properties;
-        initConnection();
+    public WordStore(Connection connection) {
+        this.connection = connection;
         initScheme();
         initWords();
-    }
-
-    private void initConnection() {
-        LOGGER.info("Подключение к базе данных слов");
-        try {
-            connection = DriverManager.getConnection(
-                    properties.getProperty("url"),
-                    properties.getProperty("username"),
-                    properties.getProperty("password")
-            );
-        } catch (SQLException e) {
-            LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
-            throw new IllegalStateException();
-        }
     }
 
     private void initScheme() {
@@ -86,9 +69,8 @@ public class WordStore implements Store<Word>, AutoCloseable {
     @Override
     public List<Word> findAll() {
         LOGGER.info("Загрузка всех слов");
-        var sql = "select * from dictionary";
-        var words = new ArrayList<Word>();
-        try (var statement = connection.prepareStatement(sql)) {
+        var words = new ArrayList<Word>(1000);
+        try (var statement = connection.prepareStatement(findAllsql)) {
             var selection = statement.executeQuery();
             while (selection.next()) {
                 words.add(new Word(
