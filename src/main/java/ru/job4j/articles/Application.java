@@ -17,9 +17,9 @@ import java.util.Properties;
 
 public class Application {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(Application.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(Application.class.getSimpleName());
 
-    public final int TARGET_COUNT = 1_000_000;
+    public final int targetCount = 1_000_000;
 
     Connection connection;
     Properties properties;
@@ -29,8 +29,8 @@ public class Application {
         createConnection();
     }
 
-    public int getTARGET_COUNT() {
-        return TARGET_COUNT;
+    public int getTargetCount() {
+        return targetCount;
     }
 
     public Connection getConnection() {
@@ -43,23 +43,23 @@ public class Application {
         var articleStore = new ArticleStore(application.getConnection());
         ArticleGenerator articleGenerator = new RandomArticleGenerator();
         ArticleService articleService = new SimpleArticleService(articleGenerator);
-        articleService.generate(wordStore, application.getTARGET_COUNT(), articleStore);
+        articleService.generate(wordStore, application.getTargetCount(), articleStore);
     }
 
     private Properties loadProperties() {
-        LOGGER.info("Загрузка настроек приложения");
+        logger.info("Загрузка настроек приложения");
         var properties = new Properties();
         try (InputStream in = Application.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(in);
         } catch (Exception e) {
-            LOGGER.error("Не удалось загрузить настройки. { }", e.getCause());
+            logger.error("Не удалось загрузить настройки. { }", e.getCause());
             throw new IllegalStateException();
         }
         return properties;
     }
 
     private void createConnection() {
-        LOGGER.info("Подключение к базе данных");
+        logger.info("Подключение к базе данных");
         try {
             Class.forName(properties.getProperty("driver"));
             connection = DriverManager.getConnection(
@@ -68,7 +68,7 @@ public class Application {
                     properties.getProperty("password")
             );
         } catch (SQLException e) {
-            LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
+            logger.error("Не удалось выполнить операцию: { }", e.getCause());
             throw new IllegalStateException();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

@@ -1,6 +1,6 @@
 package ru.job4j.articles.model;
 
-public class Word implements Cloneable {
+public class Word {
 
     private int id;
 
@@ -11,10 +11,6 @@ public class Word implements Cloneable {
         this.value = value.intern();
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 
     public int getId() {
         return id;
